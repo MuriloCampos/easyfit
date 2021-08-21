@@ -32,7 +32,7 @@ export default function Header() {
       {user ? (
         <Flex align="center">
           <Text color="white" fontWeight="bold" mr="2" fontSize="xl">
-            {user.displayName}
+            Olá, {user.displayName.split(' ')[0]}!
             </Text>
           <Avatar name="User's google avatar" src={user.photoURL} />
           {/* This logout button is just for testing */}
