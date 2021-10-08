@@ -1,8 +1,11 @@
 import { Flex } from '@chakra-ui/react'
 
 import HomeCard from '../components/HomeCard'
+import { useContext } from 'react';
+import { UserContext } from '../lib/context'
 
 export default function Home() {
+    const { user } = useContext(UserContext)
     const dataList = [
         {
             id: "1",
@@ -21,7 +24,7 @@ export default function Home() {
   return (
     <Flex direction={{ base: "column", md: "row" }} justify="space-evenly" minH="100vh">
         {dataList.map(({id, product, summary, longLine}) => (
-            <HomeCard key={id} summary={summary} product={product} longLine={longLine} />
+            <HomeCard key={id} summary={summary} product={product} longLine={longLine} isSignUpEnabled={!!user} />
         ))}
     </Flex>
   )
