@@ -1,9 +1,10 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: process.env.API_URL });
+const api = axios.create({ baseURL: process.env.NEXT_PUBLIC_API_URL });
 
-const getProfessionals = async () => {
-  const { data } = await api.get(`/professionals`);
+const getProfessionals = async (filter) => {
+  const page = filter ? filter.queryKey[1].page : 1
+  const { data } = await api.get(`/professionals?page=${page}`);
 
   return data;
 };
@@ -15,18 +16,11 @@ const getProfessional = async (id) => {
 };
 
 const getProfessionalByFilter = async (filter) => {
-  console.log(filter)
-  const { name, sport } = filter.queryKey[1]
-  let url = '/professionals/filter?'
-  if (name && !sport) {
-    url += `name=${name}`
-  }
-  else if (!name && sport) {
-    url += `sport=${sport}`
-  }
-  else {
-    url += `name=${name}&sport=${sport}`
-  }
+  const { name, sport, page } = filter.queryKey[1]
+  let url = `/professionals/filter?page=${page}`
+  url += name ? `&name=${name}` : ''
+  url += sport ? `&sport=${sport}` : ''
+
   const { data } = await api.get(url);
 
   return data;

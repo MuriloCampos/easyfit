@@ -3,26 +3,55 @@ import { useQuery } from 'react-query'
 import { Flex, Text, Grid, Icon, Select, Input } from '@chakra-ui/react'
 import { FiSearch } from "react-icons/fi";
 import debounce from 'lodash.debounce';
+import {
+  Pagination,
+  usePagination,
+  PaginationNext,
+  PaginationPage,
+  PaginationPrevious,
+  PaginationContainer,
+  PaginationPageGroup,
+} from "@ajna/pagination";
 
+import ProfessionalsList from '../../components/ProfessionalsList';
 import { getProfessionals, getSports, getProfessionalByFilter } from '../../lib/api';
-import ProfessionalCard from "../../components/ProfessionalCard"
 
 export default function Professionals (props) {
-  const [professionals, setProfessionals] = useState(props.professionals)
+  const ITEMS_PER_PAGE = 10
+  const [currentPage, setCurrentPage] = useState(1)
+  const [professionals, setProfessionals] = useState(props.professionals.data)
+  const { pages, pagesCount } = usePagination({
+    total: professionals.totalCount ?? props.professionals.totalCount,
+    initialState: { pageSize: ITEMS_PER_PAGE, currentPage: 1 }
+  });
   const { sports } = props
   const [name, setName] = useState('')
   const [sport, setSport] = useState('')
   const isQueryEnabled = name !== '' || sport !== ''
-  const { data, isLoading } = useQuery(['professionals', { name, sport }], getProfessionalByFilter, { enabled: isQueryEnabled })
+  const { data: unfilteredProfessionals, isLoading: isLoadingUnfilteredProfessionals } = useQuery(['professionals', { page: currentPage }], getProfessionals, { enabled: currentPage !== 1 })
+  const { data, isLoading } = useQuery(['filteredProfessionals', { name, sport, page: 1 }], getProfessionalByFilter, { enabled: isQueryEnabled })
 
   useEffect(() => {
     if (!isQueryEnabled) {
       setProfessionals(props.professionals)
+      setCurrentPage(1)
     }
     if (isQueryEnabled && data && !isLoading) {
       setProfessionals(data)
     }
-  }, [name, data, isLoading, props.professionals, isQueryEnabled])
+  }, [data, isLoading, props.professionals, isQueryEnabled])
+
+  useEffect(() => {
+    if (!isQueryEnabled && currentPage !== 1 && unfilteredProfessionals && !isLoadingUnfilteredProfessionals) {
+      setProfessionals(unfilteredProfessionals)
+    }
+  }, [isQueryEnabled, currentPage, unfilteredProfessionals, isLoadingUnfilteredProfessionals])
+
+  useEffect(() => {
+    if (currentPage === 1) {
+      setProfessionals(props.professionals)
+    }
+  }, [currentPage, props.professionals])
 
   const handleNameChange = event => {
     setName(event.target.value);
@@ -45,11 +74,30 @@ export default function Professionals (props) {
           {sports.map(sport => <option key={sport.id} value={sport.id}>{sport.name}</option>)}
         </Select>
       </Flex>
-      <Grid gap={6} pt={5} templateColumns={{ base: "repeat(auto-fill, minmax(250px, 1fr))", md: "repeat(auto-fill, minmax(350px, 1fr))" }}>
-        {professionals.map(professional => (
-            <ProfessionalCard key={professional.id} professional={professional} />
-        ))}
-      </Grid>
+      <ProfessionalsList professionals={professionals.data} isLoading={isLoading || isLoadingUnfilteredProfessionals} />
+      <Flex justify="center" mt={5}>
+        <Pagination
+          pagesCount={pagesCount}
+          currentPage={currentPage}
+          onPageChange={e => {
+            console.log(e)
+            setCurrentPage(e)
+          }}
+        >
+          <PaginationContainer>
+            <PaginationPrevious>Anterior</PaginationPrevious>
+            <PaginationPageGroup>
+              {pages.map((page) => (
+                <PaginationPage 
+                  key={`pagination_page_${page}`} 
+                  page={page} 
+                />
+              ))}
+            </PaginationPageGroup>
+            <PaginationNext>Proxima</PaginationNext>
+          </PaginationContainer>
+        </Pagination>
+      </Flex>
     </Flex>
   )
 }

@@ -13,7 +13,7 @@ export async function getStaticProps({ params }) {
 export async function getStaticPaths() {
   const professionals = await getProfessionals();
 
-  const paths = professionals.map(professional => {
+  const paths = professionals.data.map(professional => {
     return {
       params: { 'id': professional.id },
     }

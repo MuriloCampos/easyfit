@@ -31,7 +31,7 @@ export default function Header() {
       </Heading>
       {user ? (
         <Flex align="center">
-          <Text color="white" fontWeight="bold" mr="2" fontSize="xl">
+          <Text color="white" fontWeight="bold" mr="2" fontSize="xl" display={{ base: 'none', md: 'inline' }}>
             Olá, {user.displayName.split(' ')[0]}!
             </Text>
           <Avatar name="User's google avatar" src={user.photoURL} />
