@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect } from 'react'
 import { useQuery } from 'react-query'
-import { Flex, Text, Grid, Icon, Select, Input } from '@chakra-ui/react'
+import { Flex, Icon, Select, Input } from '@chakra-ui/react'
 import { FiSearch } from "react-icons/fi";
 import debounce from 'lodash.debounce';
 import {
@@ -57,6 +57,7 @@ export default function Professionals (props) {
     setName(event.target.value);
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedHandleNameChange = useCallback(
     debounce(handleNameChange, 500)
   , []);
@@ -74,7 +75,9 @@ export default function Professionals (props) {
           {sports.map(sport => <option key={sport.id} value={sport.id}>{sport.name}</option>)}
         </Select>
       </Flex>
+
       <ProfessionalsList professionals={professionals.data} isLoading={isLoading || isLoadingUnfilteredProfessionals} />
+      
       <Flex justify="center" mt={5}>
         <Pagination
           pagesCount={pagesCount}
