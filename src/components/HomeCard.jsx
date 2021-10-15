@@ -2,7 +2,7 @@ import {Box, AspectRatio, Stack, Text, Link, Button} from '@chakra-ui/react'
 import Image from 'next/image'
 
 export default function Card(props) {
-    const {product, summary, longLine} = props;
+    const {product, summary, longLine, isSignUpEnabled} = props;
 
     return (
         <Box
@@ -54,7 +54,7 @@ export default function Card(props) {
                 <Text my={2} color="gray.500">
                     {longLine}
                 </Text>
-                <Button mt={4} bgColor="blue.300" color="white" fontWeight="semibold" _hover={{ background: "blue.500" }}>
+                <Button disabled={!isSignUpEnabled} mt={4} bgColor="blue.300" color="white" fontWeight="semibold" _hover={{ background: "blue.500" }}>
                     Junte-se a nós!
                 </Button>
                 </Box>
