@@ -3,17 +3,21 @@ import {
   Heading, Flex, NumberInput, NumberInputField, Slider,
   SliderTrack,
   SliderFilledTrack,
-  SliderThumb, Text, Button, Select, Textarea, Checkbox
+  SliderThumb, Text, Button, Select, Textarea, Checkbox, CheckboxGroup
 } from "@chakra-ui/react"
+
+import {getSports} from '../../lib/api';
 
 import { useContext } from 'react';
 import { UserContext } from '../../lib/context'
 
-export default function StudentsSignUpForm() {
+export default function StudentsSignUpForm(props) {
   const [age, setAge] = useState('')
   const [weight, setWeight] = useState('')
   const [height, setHeight] = useState(0)
   const { user } = useContext(UserContext)
+  const [gender, setGender] = useState('')
+  const [goal, setGoal] = useState('')
 
   const handleAgeChange = e => {
     setAge(e.target.value)
@@ -28,8 +32,8 @@ export default function StudentsSignUpForm() {
       age,
       weight,
       height,
-      gender: 'male',
-      goals: 'quero ficar bom',
+      gender,
+      goals:goal,
       sports: [''],
       email: user.email,
       name: user.displayName,
@@ -44,7 +48,7 @@ export default function StudentsSignUpForm() {
       <Heading textAlign="center">QUEREMOS TE CONHECER MELHOR</Heading>
 
       <Flex direction="row" mt={5}>
-        <Flex direction="column" flex={1}>
+        <Flex direction="column" flex={1} borderWidth={1} borderColor="blue.300" padding={3} borderRadius="md" marginRight={5} alignItems="center">
  
           <Flex>
             <NumberInput mr="15">
@@ -65,9 +69,9 @@ export default function StudentsSignUpForm() {
           </Slider>
 
           <Flex>
-            <Select w="350px" mt="5" variant="outline" placeholder="Sexo:">
-              <option value="option1">Feminino</option>
-              <option value="option2">Masculino</option>
+            <Select w="350px" mt="5" variant="outline" placeholder="Sexo:" onChange={e => setGender(e.target.value)}>
+              <option value="female">Feminino</option>
+              <option value="male">Masculino</option>
             </Select>
           </Flex>
 
@@ -76,14 +80,22 @@ export default function StudentsSignUpForm() {
           </Flex>
 
           <Flex>
-            <Textarea mt="5" w="350px" placeholder="Detalhe seus objetivos" />
+            <Textarea mt="5" w="350px" placeholder="Detalhe seus objetivos" onChange={e => setGoal(e.target.value)}/>
           </Flex>
 
         </Flex>
       
-        <Flex flex={1}>ESPORTES DO SEU INTERESSE
-          <Checkbox spacing={2}>Esporte 1</Checkbox>
-          <Checkbox spacing={2}>Esporte 2</Checkbox>
+        <Flex flex={1} borderWidth={1} borderColor="blue.300" padding={3} borderRadius="md">ESPORTES DO SEU INTERESSE
+        
+          {
+            props.sports.map(sport =>  (
+            <CheckboxGroup onChange={data => console.log(data)}>
+              <Checkbox spacing={2}>{sport.name}</Checkbox>
+
+            </CheckboxGroup>
+            )
+            )
+          }
         </Flex>
 
       </Flex>
@@ -91,4 +103,13 @@ export default function StudentsSignUpForm() {
       <Button colorScheme="blue" mt="50px" onClick={handleSubmit}>Finalizar cadastro</Button>
     </Flex >
   )
+}
+
+export async function getStaticProps() {
+  const sports = await getSports()
+
+  return {
+    props: {sports },
+    revalidate: 5000,
+  };
 }
