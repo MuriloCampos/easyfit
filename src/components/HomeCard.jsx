@@ -1,8 +1,20 @@
 import {Box, AspectRatio, Stack, Text, Link, Button} from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 import Image from 'next/image'
 
 export default function Card(props) {
     const {product, summary, longLine, isSignUpEnabled} = props;
+    const router = useRouter()
+
+    console.log(isSignUpEnabled)
+
+    const handleClick = () => {
+        if (product === "Encontre um profissional para te ajudar a evoluir em seus treinos") {
+            router.push('/signup/professionals')
+        } else {
+            router.push('/signup/students')
+        }
+    }
 
     return (
         <Box
@@ -54,7 +66,7 @@ export default function Card(props) {
                 <Text my={2} color="gray.500">
                     {longLine}
                 </Text>
-                <Button disabled={!isSignUpEnabled} mt={4} bgColor="blue.300" color="white" fontWeight="semibold" _hover={{ background: "blue.500" }}>
+                <Button onClick={handleClick} disabled={!isSignUpEnabled} mt={4} bgColor="blue.300" color="white" fontWeight="semibold" _hover={{ background: "blue.500" }}>
                     Junte-se a nós!
                 </Button>
                 </Box>

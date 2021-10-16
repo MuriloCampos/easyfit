@@ -1,7 +1,8 @@
 import { Flex, Button, Heading, Text, Avatar } from '@chakra-ui/react'
-import { auth, googleAuthProvider } from '../lib/firebase';
-
+import Link from 'next/link'
 import { useContext } from 'react';
+
+import { auth, googleAuthProvider } from '../lib/firebase';
 import { UserContext } from '../lib/context'
 
 export default function Header() {
@@ -22,13 +23,16 @@ export default function Header() {
       justify="space-between" 
       bgColor="blue.300"
     >
-      <Heading 
-        color="white" 
-        fontWeight="semibold" 
-        letterSpacing="tighter"
-      >
-        easyfit
-      </Heading>
+      <Link href="/" passHref>
+        <Heading 
+          color="white" 
+          fontWeight="semibold" 
+          letterSpacing="tighter"
+          cursor="pointer"
+        >
+          easyfit
+        </Heading>
+      </Link>
       {user ? (
         <Flex align="center">
           <Text color="white" fontWeight="bold" mr="2" fontSize="xl" display={{ base: 'none', md: 'inline' }}>

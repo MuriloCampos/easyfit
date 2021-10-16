@@ -32,4 +32,15 @@ const getSports = async () => {
   return data;
 };
 
-export { getProfessionals, getProfessional, getSports, getProfessionalByFilter };
+const postStudent = async data => {
+  try {
+    const response = await api.post('/students', data)
+
+    return response;
+  } catch(e) {
+    return e
+  }
+  
+}
+
+export { getProfessionals, getProfessional, getSports, getProfessionalByFilter, postStudent };

@@ -1,12 +1,14 @@
 import { useState } from 'react'
+import { useRouter } from 'next/router'
 import {
   Heading, Flex, NumberInput, NumberInputField, Slider,
   SliderTrack,
   SliderFilledTrack,
-  SliderThumb, Text, Button, Select, Textarea, Checkbox, CheckboxGroup
+  SliderThumb, Text, Button, Select, Textarea, Checkbox
 } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 
-import {getSports} from '../../lib/api';
+import { getSports, postStudent } from '../../lib/api';
 
 import { useContext } from 'react';
 import { UserContext } from '../../lib/context'
@@ -15,9 +17,12 @@ export default function StudentsSignUpForm(props) {
   const [age, setAge] = useState('')
   const [weight, setWeight] = useState('')
   const [height, setHeight] = useState(0)
-  const { user } = useContext(UserContext)
   const [gender, setGender] = useState('')
   const [goal, setGoal] = useState('')
+  const [sports, setSports] = useState([])
+  const { user } = useContext(UserContext)
+  const router = useRouter()
+  const toast = useToast()
 
   const handleAgeChange = e => {
     setAge(e.target.value)
@@ -27,20 +32,39 @@ export default function StudentsSignUpForm(props) {
     setWeight(e.target.value)
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const data = {
-      age,
-      weight,
+      age: parseInt(age),
+      weight: parseFloat(weight),
       height,
       gender,
       goals:goal,
-      sports: [''],
+      sports,
       email: user.email,
       name: user.displayName,
-      avatar: user.photoURL
+      avatar_url: user.photoURL
     }
 
-    console.log(data)
+    const response = await postStudent(data)
+
+    if (response.status === 201) {
+      toast({
+        title: "Usuário criado com sucesso.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      })
+      router.push('/professionals?page=1')
+    } else {
+      toast({
+        title: "Erro na criação do usuário.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      })
+    }
   }
 
   return (
@@ -86,16 +110,15 @@ export default function StudentsSignUpForm(props) {
         </Flex>
       
         <Flex flex={1} borderWidth={1} borderColor="blue.300" padding={3} borderRadius="md">ESPORTES DO SEU INTERESSE
-        
-          {
-            props.sports.map(sport =>  (
-            <CheckboxGroup onChange={data => console.log(data)}>
-              <Checkbox spacing={2}>{sport.name}</Checkbox>
+            {props.sports.map(sport =>  <Checkbox onChange={e => {
+              const index = sports.findIndex(sport => sport === e.target.value)
 
-            </CheckboxGroup>
-            )
-            )
-          }
+              if (index === -1) {
+                setSports(current => [...current, e.target.value])
+              } else {
+                setSports(current => current.filter(sport => sport !== e.target.value))
+              }
+            }} key={sport.id} spacing={2} value={sport.id}>{sport.name}</Checkbox>)}
         </Flex>
 
       </Flex>
