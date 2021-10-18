@@ -1,6 +1,5 @@
-import { Flex, Divider, Icon, Box } from '@chakra-ui/react'
+import { Flex, Divider, Box } from '@chakra-ui/react'
 import { SkeletonCircle, SkeletonText } from "@chakra-ui/react"
-import { FiHeart } from "react-icons/fi";
 
 export default function ProfessionalCardSkeleton() {
 
