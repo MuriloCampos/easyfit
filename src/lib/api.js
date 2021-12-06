@@ -22,9 +22,12 @@ const getStudents = async () => {
 };
 
 const getStudent = async (email) => {
-  const { data } = await api.get(`/students/email?email=${encodeURIComponent(email)}`);
-
-  return data;
+  try {
+    const { data } = await api.get(`/students/email?email=${encodeURIComponent(email)}`);
+    return data;
+  } catch (error) {
+    return error
+  }
 };
 
 const getProfessionalByFilter = async (filter) => {

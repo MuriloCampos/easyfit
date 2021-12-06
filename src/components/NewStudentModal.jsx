@@ -75,7 +75,7 @@ export default function NewStudentModal(props) {
         isClosable: true,
         position: 'top-right',
       })
-      router.push('/professionals?page=1')
+      router.push('/professionals')
     } else {
       toast({
         title: "Erro na criação do usuário.",

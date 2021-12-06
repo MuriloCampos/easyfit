@@ -19,7 +19,7 @@ export default function ClassListItem(props) {
         <Flex direction="column" width="full" ml={3} alignItems="flex-start">
           <Text fontWeight="semibold">{classItem.professional.user.name}</Text>
           <Badge colorScheme="green">{classItem.sport.name}</Badge>
-          <Text mt="1.5">{format(new Date(classItem.datetime), 'dd/MM/yyyy hh:mm')}</Text>
+          <Text mt="1.5">{format(new Date(classItem.datetime), 'dd/MM/yyyy HH:mm')}</Text>
         </Flex>
       </Flex>
     </>
