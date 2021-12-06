@@ -24,7 +24,7 @@ export default function Header() {
         justify="space-between" 
         bgColor="blue.300"
       >
-        <Link href="/professionals" passHref>
+        <a href="/professionals">
           <Heading 
             color="white" 
             fontWeight="semibold" 
@@ -33,15 +33,15 @@ export default function Header() {
           >
             easyfit
           </Heading>
-        </Link>
+        </a>
         {user ? (
           <Flex align="center">
             <Text color="white" fontWeight="bold" mr="2" fontSize="xl" display={{ base: 'none', md: 'inline' }}>
               Olá, {user.displayName.split(' ')[0]}!
               </Text>
-            <Link href={`/user/${user.email}`}>
+            <a href={`/user/${user.email}`}>
               <Avatar name="User's google avatar" src={user.photoURL} cursor="pointer" />
-            </Link>
+            </a>
           </Flex>
         ) : 
           <></>
