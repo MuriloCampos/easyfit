@@ -14,8 +14,6 @@ export default function Card(props) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const router = useRouter()
 
-    console.log(isSignUpEnabled)
-
     const handleClick = () => {
         if (product === "Encontre um profissional para te ajudar a evoluir em seus treinos") {
             router.push('/signup/students')

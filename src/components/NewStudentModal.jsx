@@ -20,12 +20,15 @@ import {
   Checkbox,
   Flex,
   Divider,
-  Grid
+  Grid,
+  Spinner,
+  useToast,
 } from "@chakra-ui/react"
-import { useToast } from "@chakra-ui/react"
 import { useRouter } from 'next/router'
+import { FiCheckCircle } from "react-icons/fi";
 
 import { postStudent } from '../lib/api';
+import { auth, googleAuthProvider } from '../lib/firebase'
 
 
 export default function NewStudentModal(props) {
@@ -36,7 +39,7 @@ export default function NewStudentModal(props) {
   const [gender, setGender] = useState('')
   const [goal, setGoal] = useState('')
   const [sports, setSports] = useState([])
-  const [userSubmission, setUserSubmission] = useState('idle')
+  const [googleSignInStatus, setGoogleSignInStatus] = useState('idle')
   const toast = useToast()
   const router = useRouter()
 
@@ -64,11 +67,7 @@ export default function NewStudentModal(props) {
 
     const response = await postStudent(data)
 
-    console.log(response.status)
-    console.log('baiushdauiohd')
-
     if (response.status && response.status === 201) {
-      setUserSubmission('success')
       toast({
         title: "Usuário criado com sucesso.",
         status: "success",
@@ -77,10 +76,7 @@ export default function NewStudentModal(props) {
         position: 'top-right',
       })
       router.push('/professionals?page=1')
-      // onClose()
     } else {
-      setUserSubmission('error')
-      console.log('else toast')
       toast({
         title: "Erro na criação do usuário.",
         status: "error",
@@ -88,10 +84,15 @@ export default function NewStudentModal(props) {
         isClosable: true,
         position: 'top-right',
       })
-      // onClose()
     }
 
   }
+
+  const signInWithGoogle = async () => {
+    setGoogleSignInStatus('loading')
+    await auth.signInWithPopup(googleAuthProvider);
+    setGoogleSignInStatus('success')
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -100,7 +101,14 @@ export default function NewStudentModal(props) {
         <ModalHeader>Queremos te conhecer melhor</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Flex mb="5">
+          <Flex w="full" justify="center">
+            {googleSignInStatus === 'idle' ? 
+              <Button onClick={signInWithGoogle} alignSelf="center">Login com Google</Button>
+              : googleSignInStatus === 'success' ? <FiCheckCircle color="green" size="40" /> : <Spinner />
+            }
+            
+          </Flex>
+          <Flex my="5">
             <NumberInput mr="5">
               <NumberInputField placeholder="Idade" onChange={handleAgeChange} />
             </NumberInput>
@@ -140,13 +148,11 @@ export default function NewStudentModal(props) {
               }
             }} key={sport.id} spacing={2} value={sport.id}>{sport.name}</Checkbox>)}
           </Grid>
-
-          {userSubmission === 'error' && <span>Erro na criação do usuário</span>}
         </ModalBody>
 
         <ModalFooter>
           <Button variant="ghost" onClick={onClose} mr={3}>Cancelar</Button>
-          <Button colorScheme="blue" onClick={handleSubmit}>
+          <Button disabled={!!!user} colorScheme="blue" onClick={handleSubmit}>
             Criar conta
           </Button>
         </ModalFooter>

@@ -7,7 +7,9 @@ import { Flex, Grid, Divider, Icon, Button, Avatar, Box, Badge, Text, Modal,
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  Select } from '@chakra-ui/react'
+  Select,
+  useToast,
+ } from '@chakra-ui/react'
 import Calendar from 'react-calendar'
 import { useQuery } from 'react-query'
 import 'react-calendar/dist/Calendar.css';
@@ -15,7 +17,7 @@ import { FiHeart } from "react-icons/fi";
 
 import { UserContext } from '../lib/context'
 import { getStripeJs } from '../lib/stripe-js'
-import { getProfessionalClassesOfDay, startStripeCheckoutSession } from '../lib/api';
+import { getProfessionalClassesOfDay, startStripeCheckoutSession, postNewClass } from '../lib/api';
 
 export default function ProfessionalCard(props) {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -27,6 +29,7 @@ export default function ProfessionalCard(props) {
   let classTimes = []
   const { user } = React.useContext(UserContext)
   const working_hours = JSON.parse(props.professional.working_hours)
+  const toast = useToast()
 
   if (data) {
     classTimes = data.map(d => {
@@ -37,19 +40,35 @@ export default function ProfessionalCard(props) {
 
   const handleNewClassSubmit = async () => {
     const classData = {
-      professionalId: props.professional.id,
-      studentEmail: user.email,
-      sport: classExpertise,
-      datetime: classDateTime
+      professional_id: props.professional.id,
+      student_email: user.email,
+      sport_id: classExpertise,
+      class_datetime: classDateTime
     }
 
-    const response = await startStripeCheckoutSession(user.email)
-    
-    const { sessionId } =  response.data
+    const response = await postNewClass(classData)
 
-    const stripe = await getStripeJs()
-
-    await stripe.redirectToCheckout({ sessionId })
+    if (response.status && response.status === 201) {
+      toast({
+        title: "Prosseguindo para pagamento.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      })
+      const stripeResponse = await startStripeCheckoutSession(user.email)
+      const { sessionId } =  stripeResponse.data
+      const stripe = await getStripeJs()
+      await stripe.redirectToCheckout({ sessionId })
+    } else {
+      toast({
+        title: "Erro no agendamento.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      })
+    }
   }
 
   const handleExpertiseChange = event => {

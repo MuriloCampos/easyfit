@@ -18,8 +18,6 @@ const getProfessional = async (id) => {
 const getStudents = async () => {
   const { data } = await api.get(`/students`);
 
-  console.log(data)
-
   return data;
 };
 
@@ -71,10 +69,19 @@ const getStudentClasses = async email => {
 }
 
 const startStripeCheckoutSession = async email => {
-  console.log(process.env.NEXT_PUBLIC_API_ROUTE_URL)
   const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ROUTE_URL}/checkout`, { email })
 
   return response
+}
+
+const postNewClass = async data => {
+  try {
+    const response = await api.post('/classes', data)
+
+    return response;
+  } catch(e) {
+    return e
+  }
 }
 
 export { 
@@ -88,4 +95,5 @@ export {
   getStudents, 
   getStudent,
   getStudentClasses,
+  postNewClass,
 };
