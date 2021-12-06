@@ -15,6 +15,18 @@ const getProfessional = async (id) => {
   return data;
 };
 
+const getStudents = async () => {
+  const { data } = await api.get(`/students`);
+
+  return data;
+};
+
+const getStudent = async (email) => {
+  const { data } = await api.get(`/students/email?email=${encodeURIComponent(email)}`);
+
+  return data;
+};
+
 const getProfessionalByFilter = async (filter) => {
   const { name, sport, page } = filter.queryKey[1]
   let url = `/professionals/filter?page=${page}`
@@ -32,4 +44,56 @@ const getSports = async () => {
   return data;
 };
 
-export { getProfessionals, getProfessional, getSports, getProfessionalByFilter };
+const postStudent = async data => {
+  try {
+    const response = await api.post('/students', data)
+
+    return response;
+  } catch(e) {
+    return e
+  }
+  
+}
+
+const getProfessionalClassesOfDay = async (query) => {
+  const { id, day } = query.queryKey[1]
+  const { data } = await api.get(`/classes/professional_classes?id=${id}&day=${day}`)
+
+  return data
+}
+
+const getStudentClasses = async email => {
+  const { data } = await api.get(`/classes/student_classes?email=${email}`)
+
+  return data
+}
+
+const startStripeCheckoutSession = async email => {
+  const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ROUTE_URL}/checkout`, { email })
+
+  return response
+}
+
+const postNewClass = async data => {
+  try {
+    const response = await api.post('/classes', data)
+
+    return response;
+  } catch(e) {
+    return e
+  }
+}
+
+export { 
+  getProfessionals, 
+  getProfessional, 
+  getSports, 
+  getProfessionalByFilter, 
+  postStudent, 
+  getProfessionalClassesOfDay, 
+  startStripeCheckoutSession, 
+  getStudents, 
+  getStudent,
+  getStudentClasses,
+  postNewClass,
+};

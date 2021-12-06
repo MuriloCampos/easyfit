@@ -1,31 +1,33 @@
-import { Flex } from '@chakra-ui/react'
+import React from 'react'
+import { Flex, useDisclosure } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 
-import HomeCard from '../components/HomeCard'
 import { useContext } from 'react';
 import { UserContext } from '../lib/context'
+import NewStudentModal from '../components/NewStudentModal';
+import { getSports } from '../lib/api'
 
-export default function Home() {
+export default function Home(props) {
     const { user } = useContext(UserContext)
-    const dataList = [
-        {
-            id: "1",
-            product: "Encontre um profissional para te ajudar a evoluir em seus treinos",
-            summary: "Profissionais certificados com horários flexíveis",
-            longLine: "This is a very long description"
-        },
-        {
-            id: "2",
-            product: "Encontre alunos para aplicar seus treinos",
-            summary: "Centralize todo o seu planejamento de aulas em um lugar só",
-            longLine: "This is a very long description"
-        },
-    ]
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const router = useRouter()
+
+    if (router.query.modal && router.query.modal === 'student' && !isOpen) {
+        onOpen()
+    }
 
   return (
     <Flex direction={{ base: "column", md: "row" }} justify="space-evenly" minH="100vh">
-        {dataList.map(({id, product, summary, longLine}) => (
-            <HomeCard key={id} summary={summary} product={product} longLine={longLine} isSignUpEnabled={!!user} />
-        ))}
+        <NewStudentModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} sports={props.sports} user={user} />
     </Flex>
   )
 }
+
+export async function getStaticProps() {
+    const sports = await getSports()
+  
+    return {
+      props: { sports },
+      revalidate: 5000,
+    };
+  }

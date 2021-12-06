@@ -83,7 +83,6 @@ export default function Professionals (props) {
           pagesCount={pagesCount}
           currentPage={currentPage}
           onPageChange={e => {
-            console.log(e)
             setCurrentPage(e)
           }}
         >
