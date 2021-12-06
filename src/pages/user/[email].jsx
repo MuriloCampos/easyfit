@@ -1,32 +1,16 @@
 import { Grid, Flex, Button, Text, Spinner, Divider } from '@chakra-ui/react'
 import { useQuery } from 'react-query'
 
-import { getStudents, getStudent, getStudentClassesQuery } from '../../lib/api';
+import { getStudent, getStudentClassesQuery } from '../../lib/api';
 import ClassListItem from '../../components/ClassListItem';
 import { auth } from '../../lib/firebase'
 
-export async function getStaticProps({ params }) {
+export async function getServerSideProps({ params }) {
   const { email } = params;
   const student = await getStudent(email)
 
   return {
-    props: { email, student },
-    revalidate: 5000,
-  };
-}
-
-export async function getStaticPaths() {
-  const students = await getStudents();
-
-  const paths = students.map(student => {
-    return {
-      params: { 'email': student.user.email },
-    }
-  })
-
-  return {
-    paths,
-    fallback: 'blocking',
+    props: { email, student }
   };
 }
 
@@ -51,7 +35,6 @@ export default function Profile(props) {
         <Text>Sexo: {props.student.user.gender === 'male' ? 'Masculino' : 'Feminino'}</Text>
         <Text>Objetivos: {props.student.goals}</Text>
         <Button onClick={handleSignOut} colorScheme="red" w="50%" mt="5">SAIR</Button>
-
       </Flex>
 
       <Flex w="50%" direction="column" alignItems="center">
