@@ -71,6 +71,13 @@ const getStudentClasses = async email => {
   return data
 }
 
+const getStudentClassesQuery = async filter => {
+  const { email } = filter.queryKey[1]
+  const { data } = await api.get(`/classes/student_classes?email=${email}`)
+
+  return data
+}
+
 const startStripeCheckoutSession = async email => {
   const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ROUTE_URL}/checkout`, { email })
 
@@ -99,4 +106,5 @@ export {
   getStudent,
   getStudentClasses,
   postNewClass,
+  getStudentClassesQuery,
 };

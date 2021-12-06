@@ -1,17 +1,16 @@
-import { Grid, Flex, Button, Heading, Text, Avatar, useDisclosure, Divider } from '@chakra-ui/react'
-import { useRouter } from 'next/router'
+import { Grid, Flex, Button, Text, Spinner, Divider } from '@chakra-ui/react'
+import { useQuery } from 'react-query'
 
-import { getStudents, getStudent, getStudentClasses } from '../../lib/api';
+import { getStudents, getStudent, getStudentClassesQuery } from '../../lib/api';
 import ClassListItem from '../../components/ClassListItem';
 import { auth } from '../../lib/firebase'
 
 export async function getStaticProps({ params }) {
   const { email } = params;
   const student = await getStudent(email)
-  const classes = await getStudentClasses(email)
 
   return {
-    props: { email, student, classes },
+    props: { email, student },
     revalidate: 5000,
   };
 }
@@ -32,6 +31,8 @@ export async function getStaticPaths() {
 }
 
 export default function Profile(props) {
+  const { data, isLoading } = useQuery(['classes', { email: props.email }], getStudentClassesQuery)
+
   const handleSignOut = () => {
     auth.signOut()
     window.location.assign('https://gifted-ramanujan-0a5946.netlify.app/')
@@ -56,7 +57,7 @@ export default function Profile(props) {
       <Flex w="50%" direction="column" alignItems="center">
         <Text fontSize="xl" fontWeight="semibold">Aulas</Text>
         <Grid gap={6} pt={5} templateColumns={{ base: "repeat(auto-fill, minmax(250px, 1fr))", md: "repeat(auto-fill, minmax(350px, 1fr))" }}>
-          {props.classes.map(classItem => <ClassListItem key={classItem.id} classItem={classItem} />)}
+          {isLoading ? <Spinner size="lg" /> : data.map(classItem => <ClassListItem key={classItem.id} classItem={classItem} />)}
         </Grid>
       </Flex>
     </Flex>
