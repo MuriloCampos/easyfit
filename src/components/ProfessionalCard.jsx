@@ -9,15 +9,23 @@ import { Flex, Grid, Divider, Icon, Button, Avatar, Box, Badge, Text, Modal,
   useDisclosure,
   Select,
   useToast,
+  Spinner,
  } from '@chakra-ui/react'
 import Calendar from 'react-calendar'
 import { useQuery } from 'react-query'
 import 'react-calendar/dist/Calendar.css';
 import { FiHeart } from "react-icons/fi";
+import { AiOutlineStar, AiFillStar } from "react-icons/ai";
+import Rating from 'react-rating'
 
 import { UserContext } from '../lib/context'
 import { getStripeJs } from '../lib/stripe-js'
-import { getProfessionalClassesOfDay, startStripeCheckoutSession, postNewClass } from '../lib/api';
+import { 
+  getProfessionalClassesOfDay, 
+  startStripeCheckoutSession, 
+  postNewClass,
+  getProfessionalRating,
+} from '../lib/api';
 
 export default function ProfessionalCard(props) {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -26,8 +34,9 @@ export default function ProfessionalCard(props) {
   const [classTime, setClassTime] = React.useState(0)
   const [classDateTime, setClassDateTime] = React.useState()
   const { data, isLoading } = useQuery(['classes', { id: props.professional.id, day: calendarDay.toISOString() }], getProfessionalClassesOfDay, { enabled: isOpen })
-  let classTimes = []
+  const { data: classRating, isLoading: isLoadingRating } = useQuery(['rating', { id: props.professional.id }], getProfessionalRating)
   const { user } = React.useContext(UserContext)
+  let classTimes = []
   const working_hours = JSON.parse(props.professional.working_hours)
   const toast = useToast()
 
@@ -102,11 +111,19 @@ export default function ProfessionalCard(props) {
               <Text fontSize="xl" fontWeight="semibold">{props.professional.user.name}</Text>
               <Icon as={FiHeart} />
             </Flex>
-            <Box>
+            <Box mb="2">
               {props.professional.expertise.map(expertise => 
                 <Badge key={expertise.id} mr="2">{expertise.name}</Badge>
               )}
             </Box>
+            {classRating && !isLoadingRating && classRating > 0 && (
+              <Rating 
+                readonly
+                initialRating={classRating}
+                emptySymbol={<AiOutlineStar color="#F59E0B" size="20" />}
+                fullSymbol={<AiFillStar color="#F59E0B" size="20" />} 
+              />
+            )}
           </Flex>
         </Flex>
 
@@ -133,17 +150,20 @@ export default function ProfessionalCard(props) {
               </Select>
             )}
             <Flex direction={{ base: "column", md: "row" }}>
-              <Calendar value={calendarDay} onChange={setCalendarDay} />
+              <Calendar value={calendarDay} onChange={setCalendarDay} minDate={new Date()} />
               <Box ml={{ base: 0, md: 5 }}>
                 <Text fontWeight="bold" textAlign="center" mb="3">Horarios</Text>
-                <Grid templateColumns="1fr 1fr" gap="1.5">
-                  {working_hours.map(schedule_time => {
-                    const colorScheme = getClassTimesButtonColor(schedule_time)
-                    return (
-                      <Button key={schedule_time} disabled={colorScheme === 'red'} colorScheme={colorScheme} onClick={handleClassDateTimeChange} value={schedule_time}>{schedule_time}:00</Button>
-                    )
-                  })}
-                </Grid>
+                {isLoading ? <Spinner /> : (
+                  <Grid templateColumns="1fr 1fr" gap="1.5">
+                    {working_hours.map(schedule_time => {
+                      const colorScheme = getClassTimesButtonColor(schedule_time)
+                      return (
+                        <Button key={schedule_time} disabled={colorScheme === 'red'} colorScheme={colorScheme} onClick={handleClassDateTimeChange} value={schedule_time}>{schedule_time}:00</Button>
+                      )
+                    })}
+                  </Grid>
+                )}
+                
               </Box>
             </Flex>
           </ModalBody>

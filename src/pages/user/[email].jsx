@@ -1,4 +1,5 @@
-import { Grid, Flex, Button, Text, Spinner, Divider } from '@chakra-ui/react'
+import React, { useEffect, useState } from 'react'
+import { Grid, Flex, Button, Text, Spinner, Divider, Center, Badge } from '@chakra-ui/react'
 import { useQuery } from 'react-query'
 
 import { getStudent, getStudentClassesQuery } from '../../lib/api';
@@ -16,33 +17,73 @@ export async function getServerSideProps({ params }) {
 
 export default function Profile(props) {
   const { data, isLoading } = useQuery(['classes', { email: props.email }], getStudentClassesQuery)
+  const [orderedData, setOrderedData] = useState()
+
+  useEffect(() => {
+    if (data && !isLoading) {
+      const newData = data.sort((a, b) => new Date(b.datetime) - new Date(a.datetime))
+      setOrderedData(newData)
+    }
+  }, [data])
 
   const handleSignOut = () => {
     auth.signOut()
     window.location.assign('https://gifted-ramanujan-0a5946.netlify.app/')
   }
   return (
-    <Flex direction="row" p={5}>
-      <Flex w="50%" direction="column">
-        <Text fontSize="xl" fontWeight="semibold">Infos</Text>
+    <Center my="10">
+      <Flex direction={{ base: "column", md: "row" }} w="80%">
+        <Flex mb={{ base: "15", md: "0" }} w={{ base: "100%", md: "40%" }} direction="column" bgColor="white" p={3} rounded="md">
+          <Text fontSize="xl" fontWeight="semibold">Dados pessoais</Text>
 
-        <Divider my="5" />
+          <Divider my="3" />
 
-        <Text>Nome: {props.student.user.name}</Text>
-        <Text>Idade: {props.student.user.age}</Text>
-        <Text>Peso: {props.student.weight}</Text>
-        <Text>Altura: {props.student.height}</Text>
-        <Text>Sexo: {props.student.user.gender === 'male' ? 'Masculino' : 'Feminino'}</Text>
-        <Text>Objetivos: {props.student.goals}</Text>
-        <Button onClick={handleSignOut} colorScheme="red" w="50%" mt="5">SAIR</Button>
+          <Flex mb="1.5">
+            <Text fontWeight="semibold" mr="1.5">Nome:</Text>
+            <Text>{props.student.user.name}</Text>
+          </Flex>
+
+          <Flex mb="1.5">
+            <Text fontWeight="semibold" mr="1.5">Idade:</Text>
+            <Text>{props.student.user.age}</Text>
+          </Flex>
+
+          <Flex mb="1.5">
+            <Text fontWeight="semibold" mr="1.5">Peso:</Text>
+            <Text>{props.student.weight}</Text>
+          </Flex>
+
+          <Flex mb="1.5">
+            <Text fontWeight="semibold" mr="1.5">Altura:</Text>
+            <Text>{props.student.height}</Text>
+          </Flex>
+
+          <Flex mb="1.5">
+            <Text fontWeight="semibold" mr="1.5">Sexo:</Text>
+            <Text>{props.student.user.gender === 'male' ? 'Masculino' : 'Feminino'}</Text>
+          </Flex>
+
+          <Flex mb="1.5">
+            <Text fontWeight="semibold">Esportes:</Text>
+            {props.student.sports.map(sport => <Badge ml="1.5" key={sport.id}>{sport.name}</Badge>)}
+          </Flex>
+
+          <Flex mb="1.5">
+            <Text fontWeight="semibold" mr="1.5">Objetivos:</Text>
+            <Text>{props.student.goals}</Text>
+          </Flex>
+          <Button mt="auto" onClick={handleSignOut} colorScheme="red" w="50%" mt="auto" mx="auto">SAIR</Button>
+        </Flex>
+
+        <Flex w="20%" />
+
+        <Flex w={{ base: "100%", md: "40%" }} direction="column" alignItems="center">
+          <Text fontSize="xl" fontWeight="semibold">Aulas</Text>
+          <Grid gap={6} pt={5} templateColumns={{ base: "repeat(auto-fill, minmax(250px, 1fr))", md: "repeat(auto-fill, minmax(350px, 1fr))" }}>
+            {isLoading ? <Spinner size="lg" /> : data.map(classItem => <ClassListItem key={classItem.id} classItem={classItem} />)}
+          </Grid>
+        </Flex>
       </Flex>
-
-      <Flex w="50%" direction="column" alignItems="center">
-        <Text fontSize="xl" fontWeight="semibold">Aulas</Text>
-        <Grid gap={6} pt={5} templateColumns={{ base: "repeat(auto-fill, minmax(250px, 1fr))", md: "repeat(auto-fill, minmax(350px, 1fr))" }}>
-          {isLoading ? <Spinner size="lg" /> : data.map(classItem => <ClassListItem key={classItem.id} classItem={classItem} />)}
-        </Grid>
-      </Flex>
-    </Flex>
+    </Center>
   )
 }

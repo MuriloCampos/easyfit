@@ -94,6 +94,23 @@ const postNewClass = async data => {
   }
 }
 
+const updateClassRating = async data => {
+  try {
+    const response = await api.patch(`/classes/${data.id}?rating=${data.rating}`)
+
+    return response;
+  } catch(e) {
+    return e
+  }
+}
+
+const getProfessionalRating = async filter => {
+  const { id } = filter.queryKey[1]
+  const { data } = await api.get(`/classes/professional_rating?id=${id}`)
+
+  return data
+}
+
 export { 
   getProfessionals, 
   getProfessional, 
@@ -107,4 +124,6 @@ export {
   getStudentClasses,
   postNewClass,
   getStudentClassesQuery,
+  updateClassRating,
+  getProfessionalRating,
 };

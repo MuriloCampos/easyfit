@@ -28,6 +28,7 @@
     "react-firebase-hooks": "^3.0.4",
     "react-icons": "^4.3.1",
     "react-query": "^3.25.1",
+    "react-rating": "^2.0.5",
     "sass": "^1.44.0",
     "stripe": "^8.191.0"
   },
