@@ -104,12 +104,11 @@ export default function Professionals (props) {
   )
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const professionals = await getProfessionals()
   const sports = await getSports()
 
   return {
-    props: { professionals, sports },
-    revalidate: 5000,
+    props: { professionals, sports }
   };
 }
