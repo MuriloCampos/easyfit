@@ -61,11 +61,10 @@ export default function Home(props) {
   )
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
     const sports = await getSports()
   
     return {
-      props: { sports },
-      revalidate: 5000,
+      props: { sports }
     };
   }
