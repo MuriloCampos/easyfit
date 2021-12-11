@@ -32,7 +32,7 @@ import { auth, googleAuthProvider } from '../lib/firebase'
 
 
 export default function NewStudentModal(props) {
-  const { isOpen, onOpen, onClose, user } = props
+  const { isOpen, onClose, user } = props
   const [age, setAge] = useState('')
   const [weight, setWeight] = useState('')
   const [height, setHeight] = useState(0)

@@ -1,22 +1,26 @@
 import React, { useEffect, useCallback } from 'react'
-import { Flex, useDisclosure, useToast } from '@chakra-ui/react'
+import { Flex, useToast } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 
 import { useContext } from 'react';
 import { UserContext } from '../lib/context'
-import NewStudentModal from '../components/NewStudentModal';
+import NewStudentModalWrapper from '../components/NewStudentModalWrapper';
+import NewProfessionalModalWrapper from '../components/NewProfessionalModalWrapper';
 import { getSports, getStudent } from '../lib/api'
 import { auth, googleAuthProvider } from '../lib/firebase'
 
 export default function Home(props) {
     const { user } = useContext(UserContext)
-    const { isOpen, onOpen, onClose } = useDisclosure()
     const router = useRouter()
     const toast = useToast()
 
-    if (router.query.modal && router.query.modal === 'student' && !isOpen) {
-        onOpen()
-    }
+    const getModalWrapper = useCallback(() => {
+      if (router.query.modal && router.query.modal === 'student') {
+        return <NewStudentModalWrapper sports={props.sports} user={user} />
+      } else if (router.query.modal && router.query.modal === 'professional') {
+        return <NewProfessionalModalWrapper sports={props.sports} user={user} />
+      } else return <></>
+    }, [router.query])
 
     const signIn = useCallback(async () => {
       const authRes = await auth.signInWithPopup(googleAuthProvider);
@@ -52,7 +56,7 @@ export default function Home(props) {
 
   return (
     <Flex direction={{ base: "column", md: "row" }} justify="space-evenly" minH="100vh">
-        <NewStudentModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} sports={props.sports} user={user} />
+      {getModalWrapper()}
     </Flex>
   )
 }

@@ -58,6 +58,17 @@ const postStudent = async data => {
   
 }
 
+const postProfessional = async data => {
+  try {
+    const response = await api.post('/professionals', data)
+
+    return response;
+  } catch(e) {
+    return e
+  }
+  
+}
+
 const getProfessionalClassesOfDay = async (query) => {
   const { id, day } = query.queryKey[1]
   const { data } = await api.get(`/classes/professional_classes?id=${id}&day=${day}`)
@@ -116,7 +127,8 @@ export {
   getProfessional, 
   getSports, 
   getProfessionalByFilter, 
-  postStudent, 
+  postStudent,
+  postProfessional,
   getProfessionalClassesOfDay, 
   startStripeCheckoutSession, 
   getStudents, 
