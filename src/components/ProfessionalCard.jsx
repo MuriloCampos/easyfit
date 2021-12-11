@@ -155,7 +155,7 @@ export default function ProfessionalCard(props) {
                 <Text fontWeight="bold" textAlign="center" mb="3">Horarios</Text>
                 {isLoading ? <Spinner /> : (
                   <Grid templateColumns="1fr 1fr" gap="1.5">
-                    {working_hours.map(schedule_time => {
+                    {working_hours.filter(working_hour => working_hour > new Date().getHours()).map(schedule_time => {
                       const colorScheme = getClassTimesButtonColor(schedule_time)
                       return (
                         <Button key={schedule_time} disabled={colorScheme === 'red'} colorScheme={colorScheme} onClick={handleClassDateTimeChange} value={schedule_time}>{schedule_time}:00</Button>
