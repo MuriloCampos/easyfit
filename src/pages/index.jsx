@@ -20,7 +20,7 @@ export default function Home(props) {
       } else if (router.query.modal && router.query.modal === 'professional') {
         return <NewProfessionalModalWrapper sports={props.sports} user={user} />
       } else return <></>
-    }, [router.query])
+    }, [router.query, props.sports, user])
 
     const signIn = useCallback(async () => {
       const authRes = await auth.signInWithPopup(googleAuthProvider);
@@ -46,13 +46,13 @@ export default function Home(props) {
         })
         window.location.assign('https://gifted-ramanujan-0a5946.netlify.app/')
       }
-    }, []);
+    }, [router, toast]);
 
     useEffect(() => {
       if (router.query.modal && router.query.modal === 'login') {
         signIn()
       }
-    }, [router.query])
+    }, [router.query, signIn])
 
   return (
     <Flex direction={{ base: "column", md: "row" }} justify="space-evenly" minH="100vh">

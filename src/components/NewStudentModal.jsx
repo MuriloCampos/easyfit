@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import {
   Modal,
   ModalOverlay,
@@ -28,11 +28,12 @@ import { useRouter } from 'next/router'
 import { FiCheckCircle } from "react-icons/fi";
 
 import { postStudent } from '../lib/api';
+import { UserContext } from '../lib/context'
 import { auth, googleAuthProvider } from '../lib/firebase'
 
 
 export default function NewStudentModal(props) {
-  const { isOpen, onClose, user } = props
+  const { isOpen, onClose } = props
   const [age, setAge] = useState('')
   const [weight, setWeight] = useState('')
   const [height, setHeight] = useState(0)
@@ -42,6 +43,7 @@ export default function NewStudentModal(props) {
   const [googleSignInStatus, setGoogleSignInStatus] = useState('idle')
   const toast = useToast()
   const router = useRouter()
+  const { user } = useContext(UserContext)
 
 
   const handleAgeChange = e => {

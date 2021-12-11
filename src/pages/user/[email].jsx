@@ -24,7 +24,7 @@ export default function Profile(props) {
       const newData = data.sort((a, b) => new Date(b.datetime) - new Date(a.datetime))
       setOrderedData(newData)
     }
-  }, [data])
+  }, [data, isLoading])
 
   const handleSignOut = () => {
     auth.signOut()
@@ -72,7 +72,7 @@ export default function Profile(props) {
             <Text fontWeight="semibold" mr="1.5">Objetivos:</Text>
             <Text>{props.student.goals}</Text>
           </Flex>
-          <Button mt="auto" onClick={handleSignOut} colorScheme="red" w="50%" mt="auto" mx="auto">SAIR</Button>
+          <Button onClick={handleSignOut} colorScheme="red" w="50%" mt="auto" mx="auto">SAIR</Button>
         </Flex>
 
         <Flex w="20%" />

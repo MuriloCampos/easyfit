@@ -8,7 +8,7 @@ export default function NewStudentModalWrapper(props) {
 
   useEffect(() => {
     onOpen()
-  }, [])
+  }, [onOpen])
 
   return (
     <NewStudentModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} sports={props.sports} user={props.user} />

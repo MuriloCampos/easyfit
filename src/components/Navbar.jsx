@@ -1,6 +1,7 @@
 import { Flex, Heading, Text, Avatar } from '@chakra-ui/react'
 import { useContext } from 'react';
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 import { UserContext } from '../lib/context'
 
@@ -20,7 +21,7 @@ export default function Header() {
         justify="space-between" 
         bgColor="blue.300"
       >
-        <a href="/professionals">
+        <Link href="/professionals" passHref>
           <Heading 
             color="white" 
             fontWeight="semibold" 
@@ -29,15 +30,15 @@ export default function Header() {
           >
             easyfit
           </Heading>
-        </a>
+        </Link>
         {user && router.pathname !== '/' ? (
           <Flex align="center">
             <Text color="white" fontWeight="bold" mr="2" fontSize="xl" display={{ base: 'none', md: 'inline' }}>
               Olá, {user.displayName.split(' ')[0]}!
               </Text>
-            <a href={`/user/${user.email}`}>
+            <Link href={`/user/${user.email}`} passHref>
               <Avatar name="User's google avatar" src={user.photoURL} cursor="pointer" />
-            </a>
+            </Link>
           </Flex>
         ) : 
           <></>
